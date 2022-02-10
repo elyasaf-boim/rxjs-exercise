@@ -109,20 +109,21 @@ const {from, concat, pipe} = require("rxjs");
 //     .subscribe(console.log);
 
 
-// fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
-//     .pipe(
-//         mergeAll(),
-//         mergeMap(
-//             movie => {
-//                 from(movie.directors).pipe(
-//                     map(director => {
-//                             return fromHttpRequest(`https://orels-moviedb.herokuapp.com/directors/${director}`).pipe(
-//                                 map(director => director.name)
-//                         }
-//                     )
-//                 )
-//                 // filter(movies => movies.directors.includes('Quentin Tarantino')),
-//             )
-//             )
-//             .
-//                 subscribe(console.log);
+fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+    .pipe(
+        mergeAll(),
+        // take(10),
+        mergeMap(movie =>
+            from(movie.directors).pipe(
+                mergeMap(director => fromHttpRequest(`https://orels-moviedb.herokuapp.com/directors/${director}`).pipe(
+                        map(director => director.name),
+                        toArray(),
+                        map(directors => {
+                            return {year: movie.year, directors: directors, movie: movie.title}
+                        })
+                    )
+                )
+            )
+        ),
+        filter(movie => movie.directors.includes("Quentin Tarantino"))
+    ).subscribe(console.log);

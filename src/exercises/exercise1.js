@@ -1,7 +1,100 @@
 const {fromHttpRequest} = require('../utils/http');
+const {
+    take,
+    mergeAll,
+    takeLast,
+    filter,
+    map,
+    flatMap,
+    mergeMap,
+    count,
+    toArray,
+    groupBy,
+    max
+} = require("rxjs/operators");
+const {from, concat} = require("rxjs");
 
-fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
-    .pipe(
-        // add the proper operators to emit the correct information
-    )
-    .subscribe(console.log);
+// fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
+//     .pipe(mergeAll(), take(1))
+//     .subscribe(console.log);
+//
+// fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
+//     .pipe(mergeAll(), takeLast(1))
+//     .subscribe(console.log);
+//
+// fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
+//     .pipe(
+//         mergeAll(),
+//         filter(director => director.name.toLowerCase()[0] === director.name.toLowerCase()[director.name.length-1] )
+//     )
+//     .subscribe(console.log);
+
+
+// fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+//     .pipe(
+//         mergeAll(),
+//         count()
+//     )
+//     .subscribe(console.log);
+
+// fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+//     .pipe(
+//         mergeAll(),
+//         filter(movie => movie.id % 3 === 0 )
+//     )
+//     .subscribe(console.log);
+//
+// fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+//     .pipe(
+//         mergeAll(),
+//         filter(movie => movie.year < 1990),
+//         filter(movie => movie.directors.length > 1),
+//         map(movie => movie.title)
+//     )
+//     .subscribe(console.log);
+
+// ex 7
+// fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+//     .pipe(
+//         mergeAll(),
+//         take(200),
+//         mergeMap(movie => from(movie.genres).pipe(
+//                 mergeMap(genre => {
+//                     return fromHttpRequest(`https://orels-moviedb.herokuapp.com/genres/${genre}`)
+//                         .pipe(map(genre => genre.name))
+//                 }),
+//
+//                 toArray(),
+//                 map(genres => {
+//                         return {"year": movie.year, "genres": genres}
+//                     }
+//                 )
+//             )
+//         ),
+//         filter(movie => movie.genres.includes('thriller')),
+//         groupBy(movie => movie.year),
+//         mergeMap(group => group.pipe(count(), map(movieCount => {
+//             return [group.key, movieCount]
+//         }))),
+//         max((x, y) => x[1] > y[1] ? 1 : -1)
+//     )
+//     .subscribe(console.log);
+
+concat(
+    fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+        .pipe(
+            mergeAll(),
+            map(movie => movie.title)
+        ),
+    fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
+        .pipe(
+            mergeAll(),
+            map(director => director.name)
+        ),
+
+    fromHttpRequest('https://orels-moviedb.herokuapp.com/genres')
+        .pipe(
+            mergeAll(),
+            map(genres => genres.name)
+        ),
+).subscribe(console.log);

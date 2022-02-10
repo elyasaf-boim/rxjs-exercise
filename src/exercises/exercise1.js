@@ -12,7 +12,7 @@ const {
     groupBy,
     max
 } = require("rxjs/operators");
-const {from, concat} = require("rxjs");
+const {from, concat, pipe} = require("rxjs");
 
 // fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
 //     .pipe(mergeAll(), take(1))
@@ -80,21 +80,49 @@ const {from, concat} = require("rxjs");
 //     )
 //     .subscribe(console.log);
 
-concat(
-    fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
-        .pipe(
-            mergeAll(),
-            map(movie => movie.title)
-        ),
-    fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
-        .pipe(
-            mergeAll(),
-            map(director => director.name)
-        ),
+// concat(
+//     fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+//         .pipe(
+//             mergeAll(),
+//             map(movie => movie.title)
+//         ),
+//     fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
+//         .pipe(
+//             mergeAll(),
+//             map(director => director.name)
+//         ),
+//
+//     fromHttpRequest('https://orels-moviedb.herokuapp.com/genres')
+//         .pipe(
+//             mergeAll(),
+//             map(genres => genres.name)
+//         ),
+// ).subscribe(console.log);
 
-    fromHttpRequest('https://orels-moviedb.herokuapp.com/genres')
-        .pipe(
-            mergeAll(),
-            map(genres => genres.name)
-        ),
-).subscribe(console.log);
+// fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+//     .pipe(
+//         mergeAll(),
+//         take(5),
+//         groupBy(movie => movie.year),
+//         mergeMap(group => group.pipe(count() , map(movieCount => [group.key , movieCount])))
+//     )
+//     .subscribe(console.log);
+
+
+// fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+//     .pipe(
+//         mergeAll(),
+//         mergeMap(
+//             movie => {
+//                 from(movie.directors).pipe(
+//                     map(director => {
+//                             return fromHttpRequest(`https://orels-moviedb.herokuapp.com/directors/${director}`).pipe(
+//                                 map(director => director.name)
+//                         }
+//                     )
+//                 )
+//                 // filter(movies => movies.directors.includes('Quentin Tarantino')),
+//             )
+//             )
+//             .
+//                 subscribe(console.log);

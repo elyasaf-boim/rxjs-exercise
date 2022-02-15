@@ -125,5 +125,9 @@ fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
                 )
             )
         ),
-        filter(movie => movie.directors.includes("Quentin Tarantino"))
+        filter(movie => movie.directors.includes("Quentin Tarantino")),
+        toArray(),
+        map(movies => movies.sort((x,y) => x.year > y.year ? 1:-1)),
+        flatMap(movie => movie),
+        takeLast(5)
     ).subscribe(console.log);

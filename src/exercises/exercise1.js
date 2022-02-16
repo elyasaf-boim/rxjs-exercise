@@ -198,23 +198,55 @@ const {from, concat, pipe, zip , of} = require("rxjs");
 //            pipe(map(director => {return {director: director.name , count: movieCnt}}))
 //        )  ).subscribe(console.log);
 
+//
+//  fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+//    .pipe(
+//        mergeAll(),
+//        take(7),
+//        mergeMap(movie =>  fromHttpRequest(`https://orels-moviedb.herokuapp.com/ratings`).pipe(
+//                    mergeAll(),
+//                    filter(rating => rating.movie == movie.id),
+//                    map(rating => {
+//                        return {title: movie.title, score: rating.score}
+//                    } )
+//                 )
+//        ),
+//        groupBy(movie => movie.title),
+//        mergeMap(group => zip(of(group.key) , group.pipe(count()) ,group.pipe(reduce((acc, val) => acc + val.score,0)))),
+//        map(movie => { return {title: movie[0] , review: movie[2] / movie[1]}}),
+//        toArray(),
+//        map(movie => movie.sort((x,y) => x.review > y.review ? 1:-1))
+////        map(movie => movie[0])
+//    ).subscribe(console.log);
+
+
+
 
   fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
     .pipe(
         mergeAll(),
-        take(7),
+        take(100),
         mergeMap(movie =>  fromHttpRequest(`https://orels-moviedb.herokuapp.com/ratings`).pipe(
                     mergeAll(),
                     filter(rating => rating.movie == movie.id),
-                    map(rating => {
-                        return {title: movie.title, score: rating.score}
-                    } )
+                    mergeMap(rating => from(movie.directors).pipe(
+                            map(director => {
+                                return {title: movie.title, score: rating.score, director: director}
+                            }
+                            )
+
+                        )
+
+
+                    )
                  )
         ),
-        groupBy(movie => movie.title),
+         groupBy(movie => movie.director),
         mergeMap(group => zip(of(group.key) , group.pipe(count()) ,group.pipe(reduce((acc, val) => acc + val.score,0)))),
-        map(movie => { return {title: movie[0] , review: movie[2] / movie[1]}}),
-        toArray(),
-        map(movie => movie.sort((x,y) => x.review > y.review ? 1:-1))
-//        map(movie => movie[0])
-    ).subscribe(console.log);
+        map(tuple => { return {director: tuple[0] , review: tuple[2] / tuple[1] }}),
+        mergeMap( director_review =>
+            fromHttpRequest(`https://orels-moviedb.herokuapp.com/directors/${director_review.director}`).
+            pipe(map(director => {return {director: director.name , avgReview: director_review.review}})) ),
+        max( (x,y) => x[1] > y[1] ? 1 : -1)
+                 ).subscribe(console.log);
+

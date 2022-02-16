@@ -16,6 +16,9 @@ const {
 } = require("rxjs/operators");
 const {from, concat, pipe, zip , of} = require("rxjs");
 
- fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
-     .pipe(mergeAll(), take(1))
+ fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+     .pipe(
+         mergeAll(),
+         count()
+     )
      .subscribe(console.log);

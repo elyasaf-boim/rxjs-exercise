@@ -16,6 +16,34 @@ const {
 } = require("rxjs/operators");
 const {from, concat, pipe, zip , of} = require("rxjs");
 
- fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
-     .pipe(mergeAll(), take(1))
+
+ fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+     .pipe(
+         mergeAll(),
+         filter(movie => movie.year < 1990),
+         filter(movie => movie.directors.length > 1),
+         map(movie => movie.title)
+     )
      .subscribe(console.log);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -17,5 +17,9 @@ const {
 const {from, concat, pipe, zip , of} = require("rxjs");
 
  fromHttpRequest('https://orels-moviedb.herokuapp.com/directors')
-     .pipe(mergeAll(), take(1))
+     .pipe(
+         mergeAll(),
+         filter(director => director.name.toLowerCase()[0] === director.name.toLowerCase()[director.name.length-1] )
+     )
      .subscribe(console.log);
+

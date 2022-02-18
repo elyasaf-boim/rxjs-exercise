@@ -1,4 +1,4 @@
-const {fromHttpRequest} = require('../utils/http');
+const { fromHttpRequest } = require('../utils/http');
 const {
     take,
     mergeAll,
@@ -14,12 +14,12 @@ const {
     min,
     reduce
 } = require("rxjs/operators");
-const {from, concat, pipe, zip , of} = require("rxjs");
+const { from, concat, pipe, zip, of } = require("rxjs");
 
 
- fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
-     .pipe(
-         mergeAll(),
-         filter(movie => movie.id % 3 === 0 )
-     )
-     .subscribe(console.log);
+fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+    .pipe(
+        mergeAll(),
+        filter(movie => movie.id % 3 === 0)
+    )
+    .subscribe(console.log);

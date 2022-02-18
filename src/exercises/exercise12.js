@@ -1,4 +1,4 @@
-const {fromHttpRequest} = require('../utils/http');
+const { fromHttpRequest } = require('../utils/http');
 const {
     take,
     mergeAll,
@@ -14,18 +14,18 @@ const {
     min,
     reduce
 } = require("rxjs/operators");
-const {from, concat, pipe, zip , of} = require("rxjs");
+const { from, concat, pipe, zip, of } = require("rxjs");
 
- fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
+fromHttpRequest('https://orels-moviedb.herokuapp.com/movies')
     .pipe(
         mergeAll(),
-        mergeMap( movie =>  from(movie.genres).pipe(map(genre => {return {genre: genre, title: movie.title}})) ),
+        mergeMap(movie => from(movie.genres).pipe(map(genre => { return { genre: genre, title: movie.title } }))),
         groupBy(movie => movie.genre),
-        mergeMap( group => group.pipe(count() , map(cnt => [group.key , cnt]))),
+        mergeMap(group => group.pipe(count(), map(cnt => [group.key, cnt]))),
         min((x, y) => x[1] > y[1] ? 1 : -1),
-        mergeMap( ([genreId , movieCnt]) =>
+        mergeMap(([genreId, movieCnt]) =>
             fromHttpRequest(`https://orels-moviedb.herokuapp.com/genres/${genreId}`).
-            pipe(map(genre => {return {genre: genre.name , count: movieCnt}}))
+                pipe(map(genre => { return { genre: genre.name, count: movieCnt } }))
         )
 
     ).subscribe(console.log);

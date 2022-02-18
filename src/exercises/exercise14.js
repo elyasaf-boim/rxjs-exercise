@@ -1,4 +1,4 @@
-const {fromHttpRequest} = require('../utils/http');
+const { fromHttpRequest } = require('../utils/http');
 const {
     take,
     mergeAll,
@@ -14,6 +14,6 @@ const {
     min,
     reduce
 } = require("rxjs/operators");
-const {from, concat, pipe, zip , of} = require("rxjs");
+const { from, concat, pipe, zip, of } = require("rxjs");
 
 
